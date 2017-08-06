@@ -23,11 +23,10 @@ class BaseScreen: UIViewController {
     
     @IBAction func chooseSideTapped(_ sender: UIButton) {
         let selectionVC = storyboard?.instantiateViewController(withIdentifier: "SelectionScreen") as! SelectionScreen
-        selectionVC.selectionDelegate = self 
+        selectionVC.intern = self
+        //selectionVC.selectionDelegate = self
         present(selectionVC, animated: true, completion: nil)
     }
-    
-    
 }
 
 extension BaseScreen: SideSelectionDelegate {

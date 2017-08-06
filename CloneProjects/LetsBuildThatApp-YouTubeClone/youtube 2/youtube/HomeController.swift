@@ -37,19 +37,19 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
 //            URLSession.sharedSession.dataTaskWithURL(url: NSURL, completionHandler: (NSData?, URLResponse?, NSError?)->Void)
 //    }
     
-    func fetchVideos(){
-        let url = NSURL(string: "https://s3-us-west-2.amazonaws.com/youtubeassets/home.json")
-        
-        URLSession.shared.dataTask(with: url!) { (data, response, error) -> Void in
-            
-            if error != nil {
-                print (error)
-                return
-            } else  {
-                print ("success!!")
-            }
-        }
-    }
+//    func fetchVideos(){
+//        let url = NSURL(string: "https://s3-us-west-2.amazonaws.com/youtubeassets/home.json")
+//        
+//        URLSession.shared.dataTask(with: url!) { (data, response, error) -> Void in
+//            
+//            if error != nil {
+//                print (error)
+//                return
+//            } else  {
+//                print ("success!!")
+//            }
+//        }
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

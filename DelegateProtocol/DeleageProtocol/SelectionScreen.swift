@@ -18,15 +18,17 @@ class SelectionScreen: UIViewController {
         super.viewDidLoad()
     }
     
+    var intern: BaseScreen?
     var selectionDelegate: SideSelectionDelegate!
     
     @IBAction func imperialButtonChosen(_ sender: UIButton) {
-        selectionDelegate.didTapChoice(image: UIImage(named: "vader")!, name: "Darth Vader", color: UIColor.red)
+        intern?.didTapChoice(image: UIImage(named: "vader")!, name: "Darth Vader", color: UIColor.red)        //        selectionDelegate.didTapChoice(image: UIImage(named: "vader")!, name: "Darth Vader", color: UIColor.red)
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func rebelButtonChosen(_ sender: UIButton) {
-        selectionDelegate.didTapChoice(image: UIImage(named: "luke")!, name: "Luke Skywalker", color: UIColor.cyan)
+        intern?.didTapChoice(image: UIImage(named: "luke")!, name: "Luke Skywalker", color: UIColor.cyan)
+        //        selectionDelegate.didTapChoice(image: UIImage(named: "luke")!, name: "Luke Skywalker", color: UIColor.cyan)
         dismiss(animated: true, completion: nil)
     }
     
