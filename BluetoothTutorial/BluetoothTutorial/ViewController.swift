@@ -147,7 +147,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
                     print ("MY PERIPHERAL NAME IS: \(peripheralName)")
                     print ("MY PERIPHERAL UUID IS: \(peripheral.identifier.uuidString)")
                     foundDevices.append(peripheral)
-                } else if foundDevices.count == 2 {
+                } else if foundDevices.count == 1 {
                     print("ALL PADLOCKS FOUND!")
                     
                     // To save power, stop sacanning for other devices
@@ -156,7 +156,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
                     
                     //save a reference to the sensor tag
                     padLock = foundDevices[0] //The first padlock found by the application
-                    padLock!.delegate = self as? CBPeripheralDelegate
+                    padLock!.delegate = self as CBPeripheralDelegate
                     
                     //Request a connection to the peripheral
                     centralManager.connect(padLock!, options: nil)
@@ -166,33 +166,9 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
     }
     
-    func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
-        print("centralManager didDiscoverPeripheral - CBAdvertisementDataLocalNameKey is \"\(CBAdvertisementDataLocalNameKey)\"")
-        
-        // Retrieve the peripheral name from the advertisement data using the "kCBAdvDataLocalName" key
-        if let peripheralName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
-            print("NEXT PERIPHERAL NAME: \(peripheralName)")
-            print("NEXT PERIPHERAL UUID: \(peripheral.identifier.uuidString)")
-            
-            if peripheralName == padLockName {
-                print("SENSOR TAG FOUND! ADDING NOW!!!")
-                // to save power, stop scanning for other devices
-                keepScanning = false
-                disconnectButton.isEnabled = true
-                
-                // save a reference to the sensor tag
-                padLock = peripheral
-                padLock!.delegate = self as? CBPeripheralDelegate
-                
-                // Request a connection to the peripheral
-                centralManager.connect(padLock!, options: nil)
-            }
-        }
-    }
-    
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print(" *** SUCCESFULLY CONNECTED TO THE PADLOCK \n UUID: \(foundDevices[0].identifier.uuidString) ***")
+        print("\n\n********* SUCCESFULLY CONNECTED TO THE PADLOCK  WITH UUID: \(foundDevices[0].identifier.uuidString) ************")
         
         temperatureLabel.text = "Connected!"
         
@@ -205,6 +181,17 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     }
     
     
+    /*
+     Invoked when you discover the peripheral’s available services.
+     
+     This method is invoked when your app calls the discoverServices: method.
+     If the services of the peripheral are successfully discovered, you can access them
+     through the peripheral’s services property.
+     
+     If successful, the error parameter is nil.
+     If unsuccessful, the error parameter returns the cause of the failure.
+     */
+    // When the specified services are discovered, the peripheral calls the peripheral:didDiscoverServices: method of its delegate object.
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         
         print(" \n START didDiscoverServices \n")
@@ -214,15 +201,56 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
             return
         }
         
+        // (1) First we create an NSData object that holds one byte of information with the value of 1, which will enable the sensor we wish to turn on.
+        var enableValue:UInt8 = 1
+        //let enableBytes = NSData(bytes: &enableValue, length: MemoryLayout<UInt8>.size)
+        
         // CoreBluetooth creates an array of CBService objects -- one for each service that is discovered on the peripheral.
         if let services = peripheral.services {
             for service in services {
-                print("Discovered service \(service) \n      UUID: \(service.uuid) ")
+                print("Discovered service \(service) ")
                 //peripheral.discoverCharacteristics([self.characteristic], for: service)
-                peripheral.discoverCharacteristics(nil, for: service)
+                //peripheral.discoverCharacteristics(nil, for: service)
+                
+                if service.uuid == self.service {
+                    print ("    SERVICE MATCH FOR \(service.uuid.uuidString)!")
+                    peripheral.discoverCharacteristics(nil, for: service)
+                }
+            }
+        }
+    }
+
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        if error != nil {
+            print("There was an error discovering characteristics: \(String(describing: error?.localizedDescription))")
+        }
+        
+        print(" \n >>> Printing all characteristics for service \(service.uuid) \n")
+        if let characteristics = service.characteristics {
+            for characteristic in characteristics {
+                print(characteristic)
+                padLock?.setNotifyValue(true, for: characteristic)
             }
         }
     }
     
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        if error != nil {
+            print("ERROR ON UPDATING VALUE FOR CHARACTERISTIC: \(characteristic) - \(String(describing: error?.localizedDescription))")
+        }
+        
+        // extract the data from the characteristic's value property and display the value based on the characteristic type
+        if let dataBytes = characteristic.value {
+            if characteristic.uuid == self.characteristic {
+                print(dataBytes)
+            }
+        }
+    }
+    
+    
+
 }
+
+
+
 
