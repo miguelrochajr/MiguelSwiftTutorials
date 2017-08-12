@@ -1,6 +1,7 @@
 //: Playground - noun: a place where people can play
 
 import UIKit
+import Foundation
 
 var optionalNumber: Int?
 //optionalNumber = 23
@@ -51,16 +52,9 @@ if let devicePrice = devicePrice {
     print("My total price = \(devicePrice + 8.99)")
 }
 
-
-
-_ = Timer(timeInterval: 2.0, target: self, selector: #selector(timerAcabou), userInfo: nil, repeats: true)
-
-// _ = Timer(timeInterval: timerScanInterval, target: self, selector: #selector(pauseScan), userInfo: nil, repeats: false)
-
-func timerAcabou (){
-    print("Timer acabou!")
-}
-
+// let byte: Int8 = [0x11, 0xa1]
+let message: [UInt8] = [0x11, 0x22]
+message[0]
 
 
 

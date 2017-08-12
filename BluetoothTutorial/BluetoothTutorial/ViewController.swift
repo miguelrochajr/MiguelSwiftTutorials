@@ -247,6 +247,36 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
     }
     
+    //unlock padlock
+    
+    func Unlock(){
+        print("UNLOCK CALLED!")
+
+        
+        var messageData: [UInt8] = [0xa1,0x01]
+        let defaultPassword: [UInt8] = [0x31,0x32,0x33,0x34,0x35,0x36] // According to the chinese document
+        let commandWord: [UInt8] = [0x01] // This is the Unlock command
+        
+        messageData += (defaultPassword + commandWord) // concatenation of the arrays
+        let mData = NSData(bytes: &messageData, length: (messageData.count)) // Since each UInt8 has 1 byte, .count will return the number of items of 1 byte, which is equal to the number of bytes.
+        // unlockBytes = Data(
+        // TODO: - Check writeValue function
+//        self.peripheral?.writeValue(mData as Data, for: self.characteristicObject!, type: .withResponse)
+        // see further information at Apple's Documentation discussion section https://developer.apple.com/documentation/corebluetooth/cbperipheral/1518747-writevalue
+        
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+        if error != nil {
+            print("There was an error trying to unlock the padlock. Error: \(error?.localizedDescription)")
+        } else {
+            print("Successfully unlocked!")
+        }
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        print("Peripheral disconnected!")
+    }
     
 
 }
